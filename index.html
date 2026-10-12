@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ботинки Бум — обувь, которая шумит</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="blob blob-a" aria-hidden="true"></div>
+  <div class="blob blob-b" aria-hidden="true"></div>
+  <div class="cursor-boot" id="cursorBoot" aria-hidden="true">👟</div>
+
+  <header class="top">
+    <a class="logo" href="#">
+      <span class="logo-mark">💥</span>
+      <span>БОТИНКИ<br />БУМ</span>
+    </a>
+    <nav>
+      <a href="#catalog">Витрина</a>
+      <a href="#hits">Хиты</a>
+      <a href="#faq">Зачем это</a>
+    </nav>
+    <button class="cart-btn" id="cartBtn" type="button">
+      Корзина
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </header>
+
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="sticker">скидка 42% на здравый смысл</p>
+      <h1>Обувь, которая <em>громче</em> твоих оправданий</h1>
+      <p class="lead">
+        Мы не продаём «комфорт». Мы продаём драму на ногах.
+        Подошва хрустит, шнурки спорят, ты выглядишь как главный герой.
+      </p>
+      <div class="hero-actions">
+        <a class="btn boom" href="#catalog">Хочу шуметь</a>
+        <button class="btn ghost" id="shuffleBtn" type="button">Перемешать витрину</button>
+      </div>
+    </div>
+    <div class="hero-stage">
+      <div class="spin-ring"></div>
+      <svg class="hero-shoe" viewBox="0 0 280 180" role="img" aria-label="Гигантский кроссовок">
+        <ellipse cx="140" cy="158" rx="90" ry="12" fill="#1a1028" opacity=".18"/>
+        <path d="M40 110c8-36 42-62 92-62 48 0 86 18 108 46 10 12 18 28 8 40-8 10-28 12-46 10l-110 6c-28 2-56-12-52-40z" fill="#ff3d8f"/>
+        <path d="M48 108c10-28 40-48 84-48 38 0 70 14 90 36-18-8-40-12-68-8-36 6-70 18-106 20z" fill="#ffe600"/>
+        <path d="M38 118c4 18 28 28 70 26l96-6c22 2 38-4 42-14-8 16-34 24-62 22l-108 8c-24 0-42-14-38-36z" fill="#1a1028"/>
+        <path d="M86 78c8 14 8 28 0 42" stroke="#1a1028" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <path d="M108 72c10 16 10 32 0 48" stroke="#1a1028" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <path d="M130 70c10 16 10 34 0 50" stroke="#1a1028" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <circle cx="62" cy="102" r="10" fill="#39ff14"/>
+      </svg>
+      <p class="hero-caption">осторожно: может уйти без тебя</p>
+    </div>
+  </section>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span>не беги от проблем · беги в кроссах ·</span>
+      <span>шнурки завязаны на совесть ·</span>
+      <span>размер «ну почти» ·</span>
+      <span>гарантия: пока не надоест ·</span>
+      <span>не беги от проблем · беги в кроссах ·</span>
+      <span>шнурки завязаны на совесть ·</span>
+      <span>размер «ну почти» ·</span>
+      <span>гарантия: пока не надоест ·</span>
+    </div>
+  </div>
+
+  <section id="catalog" class="catalog">
+    <div class="section-head">
+      <h2>Витрина хаоса</h2>
+      <div class="filters" id="filters">
+        <button class="chip on" data-filter="all" type="button">все</button>
+        <button class="chip" data-filter="run" type="button">убегать</button>
+        <button class="chip" data-filter="formal" type="button">серьёзно</button>
+        <button class="chip" data-filter="home" type="button">дома</button>
+      </div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section id="hits" class="hits">
+    <div class="hit-card">
+      <h3>Хит недели</h3>
+      <p>Тапки «Я ещё 5 минут». Покупатель плачет, но не снимает.</p>
+    </div>
+    <div class="hit-card tilt">
+      <h3>Антихит</h3>
+      <p>Лапти из Wi-Fi. Ловят сеть хуже, чем твои родственники намёки.</p>
+    </div>
+    <div class="hit-card">
+      <h3>Секрет</h3>
+      <p>Левая и правая иногда меняются местами. Это фича характера.</p>
+    </div>
+  </section>
+
+  <section id="faq" class="faq">
+    <h2>Частые крики</h2>
+    <details open>
+      <summary>Это вообще обувь?</summary>
+      <p>Юридически — да. Эмоционально — цирк. Функционально — ты дойдёшь.</p>
+    </details>
+    <details>
+      <summary>Можно вернуть?</summary>
+      <p>Можно. Но ботинок будет помнить. И судить.</p>
+    </details>
+    <details>
+      <summary>Есть доставка?</summary>
+      <p>Пока только глазами. Кнопка «в корзину» чисто для кайфа.</p>
+    </details>
+  </section>
+
+  <footer>
+    <p>© 2026 Ботинки Бум. Никаких серверов, только вайб.</p>
+    <p>Сделано для тех, кто шнурует жизнь криво, но с душой.</p>
+  </footer>
+
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <aside class="cart-drawer" id="cartDrawer" aria-hidden="true" aria-label="Корзина">
+    <div class="cart-head">
+      <h2>Корзина шума</h2>
+      <button class="cart-close" id="cartClose" type="button" aria-label="Закрыть">✕</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-foot">
+      <div class="cart-total"><span>Итого</span><strong id="cartTotal">0 ₽</strong></div>
+      <button class="btn boom cart-checkout" id="checkoutBtn" type="button">Оформить бум</button>
+      <button class="cart-clear" id="clearBtn" type="button">выкинуть всё</button>
+    </div>
+  </aside>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="script.js"></script>
+</body>
+</html>

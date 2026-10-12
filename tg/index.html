@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#fff6dc" />
+  <title>Ботинки Бум</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="top">
+    <a class="logo" href="#top">
+      <span class="logo-mark">💥</span>
+      <span class="logo-text">БОТИНКИ<br />БУМ</span>
+    </a>
+    <button class="cart-pill" id="cartBtn" type="button" aria-label="Открыть корзину">
+      <span class="cart-ico">🛒</span>
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </header>
+
+  <main class="app" id="top">
+    <section class="hero">
+      <p class="sticker" id="greet">скидка 42% на здравый смысл</p>
+      <h1>Обувь, которая <em>громче</em> твоих оправданий</h1>
+      <div class="hero-stage">
+        <div class="ring"></div>
+        <img class="hero-shoe" src="assets/shoe-1.png" width="320" height="320" alt="Кроссовок" fetchpriority="high" draggable="false" />
+        <span class="hero-note">осторожно: может уйти без тебя</span>
+      </div>
+      <div class="hero-actions">
+        <a class="btn boom" href="#catalog">Хочу шуметь</a>
+        <button class="btn" id="shuffleBtn" type="button">Перемешать</button>
+      </div>
+    </section>
+
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track">
+        <span>не беги от проблем · беги в кроссах ·</span>
+        <span>шнурки завязаны на совесть ·</span>
+        <span>размер «ну почти» ·</span>
+        <span>гарантия: пока не надоест ·</span>
+        <span>не беги от проблем · беги в кроссах ·</span>
+        <span>шнурки завязаны на совесть ·</span>
+        <span>размер «ну почти» ·</span>
+        <span>гарантия: пока не надоест ·</span>
+      </div>
+    </div>
+
+    <section class="catalog" id="catalog">
+      <h2>Витрина хаоса</h2>
+      <div class="filters" id="filters">
+        <button class="chip on" data-filter="all" type="button">все</button>
+        <button class="chip" data-filter="run" type="button">убегать</button>
+        <button class="chip" data-filter="formal" type="button">серьёзно</button>
+        <button class="chip" data-filter="home" type="button">дома</button>
+      </div>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <section class="hits">
+      <h2>Хиты и антихиты</h2>
+      <div class="hits-row">
+        <div class="hit">
+          <h3>Хит недели</h3>
+          <p>Тапки «Я ещё 5 минут». Покупатель плачет, но не снимает.</p>
+        </div>
+        <div class="hit hit-y">
+          <h3>Антихит</h3>
+          <p>Лапти из Wi-Fi. Ловят сеть хуже, чем твои родственники намёки.</p>
+        </div>
+        <div class="hit">
+          <h3>Секрет</h3>
+          <p>Левая и правая иногда меняются местами. Это фича характера.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq">
+      <h2>Частые крики</h2>
+      <details>
+        <summary>Это вообще обувь?</summary>
+        <p>Юридически — да. Эмоционально — цирк. Функционально — ты дойдёшь.</p>
+      </details>
+      <details>
+        <summary>Можно вернуть?</summary>
+        <p>Можно. Но ботинок будет помнить. И судить.</p>
+      </details>
+      <details>
+        <summary>Есть доставка?</summary>
+        <p>Пока только глазами. Кнопка «в корзину» чисто для кайфа.</p>
+      </details>
+    </section>
+
+    <footer>
+      <p>© 2026 Ботинки Бум. Никаких серверов, только вайб.</p>
+    </footer>
+  </main>
+
+  <!-- запасная нижняя кнопка, когда открыто не в Telegram -->
+  <div class="dock" id="dock">
+    <button class="btn boom dock-btn" id="dockBtn" type="button">Корзина</button>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+  <section class="sheet" id="sheet" aria-hidden="true" aria-label="Корзина">
+    <div class="sheet-grip"></div>
+    <div class="sheet-head">
+      <h2>Корзина шума</h2>
+      <button class="sheet-close" id="sheetClose" type="button" aria-label="Закрыть">✕</button>
+    </div>
+    <div class="sheet-items" id="sheetItems"></div>
+    <div class="sheet-foot">
+      <div class="sheet-total"><span>Итого</span><strong id="sheetTotal">0 ₽</strong></div>
+      <button class="btn boom sheet-checkout" id="checkoutBtn" type="button">Оформить бум</button>
+      <button class="sheet-clear" id="clearBtn" type="button">выкинуть всё</button>
+    </div>
+  </section>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>
