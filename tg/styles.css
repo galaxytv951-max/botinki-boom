@@ -6,8 +6,10 @@
   --lime: #b8ff3d;
   --cyan: #3df0ff;
   --shadow: 4px 4px 0 var(--ink);
-  --safe-top: calc(env(safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* в полноэкранном режиме Telegram рисует свои кнопки поверх: отступаем и от выреза, и от них */
+  --safe-top: calc(var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px)) + var(--tg-content-safe-area-inset-top, 0px));
+  --safe-bottom: var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  --jelly: cubic-bezier(.34, 1.7, .5, 1);
 }
 
 * {
@@ -100,7 +102,7 @@ h1, h2, h3, p { margin: 0; }
   color: var(--yellow);
   font-size: .8rem;
 }
-.cart-count.pop { animation: pop .3s ease-out; }
+.cart-count.pop { animation: pop .55s ease-out; }
 
 /* ---------- каркас ---------- */
 .app {
@@ -551,8 +553,8 @@ footer {
 
 /* ---------- анимации (только transform / opacity) ---------- */
 @keyframes float {
-  0%, 100% { transform: translateY(0) rotate(-5deg); }
-  50% { transform: translateY(-12px) rotate(4deg); }
+  0%, 100% { transform: translateY(0) rotate(-5deg) scale(1.04, .96); }
+  50% { transform: translateY(-14px) rotate(4deg) scale(.97, 1.04); }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes marquee { to { transform: translateX(-50%); } }
@@ -561,7 +563,11 @@ footer {
   to { opacity: 1; transform: none; }
 }
 @keyframes pop {
-  40% { transform: scale(1.35); }
+  0%   { transform: scale(1, 1); }
+  28%  { transform: scale(1.5, .7); }
+  52%  { transform: scale(.82, 1.25); }
+  76%  { transform: scale(1.12, .94); }
+  100% { transform: scale(1, 1); }
 }
 @keyframes ps1 {
   0%   { transform: translate(0, 0) rotate(0deg); }
@@ -570,6 +576,51 @@ footer {
   75%  { transform: translate(-2px, -3px) rotate(-2deg); }
   100% { transform: translate(0, 0) rotate(0deg); }
 }
+
+/* ================= ЖЕЛЕ ================= */
+
+/* нажатие: быстро сплющило, отпустили — пружинисто вернулось с перелётом */
+.btn, .cart-pill, .chip, .ctl button, .sheet-close, .qty button, .del, .logo-mark {
+  transition: transform .55s var(--jelly), background-color .15s ease;
+  transform-origin: 50% 75%;
+}
+.btn:active, .cart-pill:active, .chip:active, .ctl button:active,
+.sheet-close:active, .qty button:active, .del:active {
+  transform: scale(1.06, .88);
+  transition-duration: .1s, .15s;
+}
+
+/* тянется при скролле: значения обновляет app.js (две пружины, чётные/нечётные чуть отстают) */
+.app {
+  --a-sk: 0deg; --a-sx: 1; --a-sy: 1;
+  --b-sk: 0deg; --b-sx: 1; --b-sy: 1;
+}
+.card:nth-child(odd), .hit:nth-child(odd), details:nth-of-type(odd) {
+  transform: skewY(var(--a-sk)) scale(var(--a-sx), var(--a-sy));
+}
+.card:nth-child(even), .hit:nth-child(even), details:nth-of-type(even) {
+  transform: skewY(var(--b-sk)) scale(var(--b-sx), var(--b-sy));
+}
+/* слой на видеокарту выдаём только пока идёт движение */
+body.moving .card, body.moving .hit, body.moving details { will-change: transform; }
+
+/* шторка выезжает с перелётом, закрывается без отскока */
+.sheet { transition: transform .32s cubic-bezier(.4, 0, .8, .6); }
+.sheet.open { transition: transform .65s cubic-bezier(.2, 1.2, .35, 1); }
+/* «подушка» снизу, чтобы при перелёте не мелькала дырка */
+.sheet::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: -3px;
+  right: -3px;
+  height: 80px;
+  background: #fff;
+  border-inline: 3px solid var(--ink);
+}
+
+.toast.show { transition: transform .6s var(--jelly), opacity .2s ease; }
+.hero-stage { transform-origin: 50% 80%; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

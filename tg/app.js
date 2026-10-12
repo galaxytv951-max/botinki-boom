@@ -18,6 +18,29 @@
     safe(() => tg.setHeaderColor("#fff6dc"));
     safe(() => tg.setBackgroundColor("#fff6dc"));
     safe(() => tg.setBottomBarColor("#fff6dc"));
+
+    // на телефоне открываем на весь экран: пропадает верхняя шапка Telegram с названием
+    // (нужен клиент с Bot API 8.0+; на старых просто останется обычный режим)
+    const mobile = /^(android|android_x|ios)$/.test(tg.platform || "");
+    if (mobile && typeof tg.requestFullscreen === "function" && tg.isVersionAtLeast && tg.isVersionAtLeast("8.0")) {
+      safe(() => tg.requestFullscreen());
+    }
+  }
+
+  // ---------- желе ----------
+  const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // «боинг»: сплющило → вытянуло → успокоилось
+  const JELLY = [
+    { transform: "scale(1, 1)" },
+    { transform: "scale(1.1, .88)", offset: 0.2 },
+    { transform: "scale(.94, 1.08)", offset: 0.45 },
+    { transform: "scale(1.03, .98)", offset: 0.7 },
+    { transform: "scale(1, 1)" },
+  ];
+  function jelly(el, duration) {
+    if (!el || reduceMotion || !el.animate) return;
+    el.animate(JELLY, { duration: duration || 560, easing: "ease-out" });
   }
 
   const haptic = {
@@ -241,6 +264,7 @@
     if (!btn) return;
     const id = Number(btn.closest(".card").dataset.id);
     const cur = cart.get(id) || 0;
+    const card = btn.closest(".card");
     if (btn.dataset.act === "inc") {
       setQty(id, cur + 1);
       haptic.tap();
@@ -249,6 +273,8 @@
       setQty(id, cur - 1);
       haptic.tap();
     }
+    jelly(card.querySelector(".art"));
+    jelly(card.querySelector(".ctl em"), 420);
   });
 
   sheetItems.addEventListener("click", (e) => {
@@ -269,9 +295,29 @@
     filter = chip.dataset.filter;
     haptic.pick();
     document.querySelectorAll(".chip").forEach((c) => c.classList.toggle("on", c === chip));
+    let n = 0;
     grid.querySelectorAll(".card").forEach((card) => {
-      card.classList.toggle("hide", !(filter === "all" || card.dataset.tag === filter));
+      const show = filter === "all" || card.dataset.tag === filter;
+      card.classList.toggle("hide", !show);
+      // оставшиеся карточки «выпрыгивают» заново, как желе из формы
+      if (show && !reduceMotion && card.animate) {
+        card.animate(
+          [
+            { opacity: 0, transform: "translateY(16px) scale(.86, .8)" },
+            { opacity: 1, transform: "translateY(-3px) scale(1.05, .96)", offset: 0.55 },
+            { opacity: 1, transform: "translateY(0) scale(.98, 1.02)", offset: 0.8 },
+            { opacity: 1, transform: "none" },
+          ],
+          { duration: 520, delay: n++ * 45, easing: "ease-out", fill: "backwards" }
+        );
+      }
     });
+  });
+
+  // тап по большому кроссовку — он «боингает»
+  $("heroStage").addEventListener("pointerdown", () => {
+    jelly($("heroStage"), 700);
+    haptic.tap();
   });
 
   $("shuffleBtn").addEventListener("click", () => {
@@ -301,6 +347,74 @@
   if (inTG) {
     safe(() => tg.MainButton.onClick(mainAction));
     safe(() => tg.BackButton.onClick(closeCart));
+  }
+
+  // ---------- желейный скролл ----------
+  // Две пружины: пока крутишь палец, карточки слегка вытягиваются и кренятся,
+  // а когда отпустил — пружинят обратно с небольшим перелётом.
+  // Нечётные и чётные карточки идут на разных пружинах, поэтому получается волна.
+  if (!reduceMotion) {
+    const appEl = document.querySelector(".app");
+    const springs = [
+      { name: "a", x: 0, v: 0, k: 140, c: 9.5 },
+      { name: "b", x: 0, v: 0, k: 100, c: 8 },
+    ];
+    const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
+    let lastY = window.scrollY;
+    let lastT = 0;
+    let smooth = 0;
+    let raf = 0;
+    let calm = 0;
+
+    const paint = () => {
+      springs.forEach((s) => {
+        appEl.style.setProperty(`--${s.name}-sk`, `${(s.x * 2.1).toFixed(3)}deg`);
+        appEl.style.setProperty(`--${s.name}-sx`, (1 - Math.abs(s.x) * 0.022).toFixed(4));
+        appEl.style.setProperty(`--${s.name}-sy`, (1 + Math.abs(s.x) * 0.04).toFixed(4));
+      });
+    };
+
+    const tick = (t) => {
+      const dt = clamp((t - lastT) / 1000, 0.001, 0.032);
+      lastT = t;
+      const y = window.scrollY;
+      const speed = (y - lastY) / dt; // px/сек, со знаком
+      lastY = y;
+      smooth += (speed - smooth) * 0.3;
+      const target = clamp(smooth / 1400, -1, 1);
+
+      let alive = Math.abs(target) > 0.01;
+      springs.forEach((s) => {
+        const acc = -s.k * (s.x - target) - s.c * s.v;
+        s.v += acc * dt;
+        s.x += s.v * dt;
+        if (Math.abs(s.x) > 0.008 || Math.abs(s.v) > 0.06) alive = true;
+      });
+      paint();
+
+      calm = alive ? 0 : calm + 1;
+      if (calm > 6) {
+        // всё успокоилось: ровняем и выключаем цикл, чтобы не жечь батарею
+        springs.forEach((s) => { s.x = 0; s.v = 0; });
+        paint();
+        document.body.classList.remove("moving");
+        raf = 0;
+        return;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (raf) return;
+        lastT = performance.now();
+        calm = 0;
+        document.body.classList.add("moving");
+        raf = requestAnimationFrame(tick);
+      },
+      { passive: true }
+    );
   }
 
   // ---------- старт ----------
