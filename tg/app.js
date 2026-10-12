@@ -52,19 +52,93 @@
   };
 
   // ---------- данные ----------
-  const products = [
-    { id: 1, name: "Кроссы побега от понедельника", price: 4990, tag: "run", joke: "+3 к скорости, −1 к достоинству", img: "assets/shoe-1.png" },
-    { id: 2, name: "Оксфорды «я на совещании»", price: 8900, tag: "formal", joke: "Шуршат так, будто ты важен", img: "assets/shoe-2.png" },
-    { id: 3, name: "Тапки судьбы", price: 1290, tag: "home", joke: "Решают, идти ли на кухню", img: "assets/shoe-3.png" },
-    { id: 4, name: "Ботинки грозы", price: 6400, tag: "run", joke: "Громче соседей сверху", img: "assets/shoe-4.png" },
-    { id: 5, name: "Туфли дипломата", price: 7200, tag: "formal", joke: "Лакированные как твои отговорки", img: "assets/shoe-5.png" },
-    { id: 6, name: "Угги для переговоров с котом", price: 3100, tag: "home", joke: "Кот всё равно выиграл", img: "assets/shoe-6.png" },
+  // Названия намеренно без брендов и без маркировок: это тестовая витрина.
+  const CATS = {
+    sneaker: { label: "кроссы", words: "кроссовки кроссы спорт" },
+    high: { label: "высокие", words: "высокие хайтопы баскетбольные" },
+    canvas: { label: "кеды", words: "кеды текстиль парусина" },
+    boot: { label: "ботинки", words: "ботинки берцы сапоги" },
+    classic: { label: "классика", words: "туфли классика офис" },
+    avant: { label: "авангард", words: "авангард странные необычные дизайнерские" },
+    home: { label: "дома", words: "тапки домашние угги" },
+  };
+
+  const COLORS = {
+    white: { label: "белые", css: "#ffffff" },
+    black: { label: "чёрные", css: "#1a1028" },
+    red: { label: "красные", css: "#e5253d" },
+    blue: { label: "синие", css: "#2455d6" },
+    gray: { label: "серые", css: "#9a9aa8" },
+    beige: { label: "бежевые", css: "#d9c3a0" },
+    yellow: { label: "жёлтые", css: "#ffe600" },
+    green: { label: "зелёные", css: "#58d628" },
+    silver: { label: "серебристые", css: "linear-gradient(135deg,#f4f6fa,#a9b0bd)" },
+    multi: { label: "разноцветные", css: "conic-gradient(#ff3d8f,#ffe600,#3df0ff,#b8ff3d,#ff3d8f)" },
+  };
+
+  // [id, название, цена, категория, цвет, мин. размер, макс. размер, шутка]
+  const RAW = [
+    [1, "Кроссы побега от понедельника", 4990, "sneaker", "green", 38, 46, "+3 к скорости, −1 к достоинству"],
+    [2, "Оксфорды «я на совещании»", 8900, "classic", "black", 39, 46, "Шуршат так, будто ты важен"],
+    [3, "Тапки судьбы", 1290, "home", "blue", 36, 45, "Решают, идти ли на кухню"],
+    [4, "Ботинки грозы", 6400, "boot", "yellow", 38, 47, "Громче соседей сверху"],
+    [5, "Туфли дипломата", 7200, "classic", "blue", 39, 46, "Лакированные как твои отговорки"],
+    [6, "Угги для переговоров с котом", 3100, "home", "beige", 36, 44, "Кот всё равно выиграл"],
+    [7, "Белые кроссы «не наступай»", 7490, "sneaker", "white", 36, 46, "Чистые ровно до первой лужи"],
+    [8, "Красно-чёрные «я в игре»", 11900, "high", "red", 40, 47, "Прыжок на 3 см выше здравого смысла"],
+    [9, "Баскетболки с синей душой", 10900, "high", "white", 39, 46, "Мяч не нужен, понты уже в комплекте"],
+    [10, "Серые высокие «я разминаюсь»", 9900, "high", "gray", 38, 46, "Разминка длиной в жизнь"],
+    [11, "Чёрные кеды для плохих стихов", 3990, "canvas", "black", 35, 46, "Идеальны для творческого кризиса"],
+    [12, "Белые кеды «свободен в субботу»", 3790, "canvas", "white", 35, 46, "Белые ровно пять минут"],
+    [13, "Красные кеды громкого настроения", 3890, "canvas", "red", 36, 46, "Слышно даже в тишине"],
+    [14, "Синие кеды тихого омута", 3690, "canvas", "blue", 36, 45, "Тихие, но с историей"],
+    [15, "Жёлтые кеды «вспышка»", 3790, "canvas", "yellow", 35, 45, "Видны из космоса и из бухгалтерии"],
+    [16, "Чёрные башни-ботинки", 24900, "avant", "black", 38, 46, "Выглядят так, будто ходят сами"],
+    [17, "Бежевые бугры судьбы", 21900, "avant", "beige", 38, 46, "Одна нога выше другой. Так задумано"],
+    [18, "Платформы «космонавт-бухгалтер»", 18900, "avant", "black", 39, 47, "Баланс дебета и кредита на 6 см выше"],
+    [19, "Угольные тракторы", 19900, "avant", "black", 38, 46, "Пашут асфальт без спроса"],
+    [20, "Носок-бегемот с пальцем", 15900, "avant", "beige", 36, 45, "Два пальца — это уже философия"],
+    [21, "Чёрные берцы «завтра сдам отчёт»", 8900, "boot", "black", 38, 47, "Шнуровка до самого дедлайна"],
+    [22, "Серебряные ковбои с другой планеты", 14900, "avant", "silver", 37, 45, "Мерцают, даже когда не просят"],
+    [23, "Зелёные подушки-сапоги", 13900, "avant", "green", 36, 45, "Пуховик, который решил ходить"],
+    [24, "Чёрные клинья неясного назначения", 16900, "avant", "black", 38, 46, "Куда они — туда и ты"],
+    [25, "Белые пуфики на липучках", 12900, "avant", "white", 36, 45, "Сидеть мягко, идти странно"],
+    [26, "Жёлтые резиновые «лужам привет»", 5900, "boot", "yellow", 36, 46, "Лужи теперь твои друзья"],
+    [27, "Челси на танковом ходу", 17900, "boot", "black", 38, 47, "Пробивают любые встречи"],
+    [28, "Объёмные кроссы «облачко»", 12400, "sneaker", "blue", 36, 46, "Подошва выше амбиций"],
+    [29, "Ботинки «художник сломался»", 9900, "avant", "multi", 37, 46, "Пятна — это задумка"],
+    [30, "Панк-ботинки на каменном ходу", 19900, "avant", "black", 37, 46, "Три пряжки, ноль извинений"],
+    [31, "Серебряные кроссы-астероид", 16900, "avant", "silver", 37, 46, "Прилетели без пересадок"],
   ];
+
+  const norm = (s) => String(s).toLowerCase().replace(/ё/g, "е");
+
+  const products = RAW.map(([id, name, price, cat, color, min, max, joke]) => ({
+    id, name, price, cat, color, min, max, joke,
+    img: `assets/shoe-${id}.png`,
+    hay: norm(`${name} ${joke} ${CATS[cat].label} ${CATS[cat].words} ${COLORS[color].label}`),
+  }));
   const byId = (id) => products.find((p) => p.id === id);
   const rub = (n) => `${n.toLocaleString("ru-RU")} ₽`;
 
-  const cart = new Map(); // id -> количество
-  let cartOpen = false;
+  const SIZES = [];
+  for (let s = 36; s <= 47; s++) SIZES.push(s);
+  const PRICE_MAX = 25000;
+
+  // размер «в наличии», если входит в линейку и не из тех, что «уже разобрали» (псевдослучайно, но стабильно)
+  const inStock = (p, s) => s >= p.min && s <= p.max && (p.id * 13 + s * 7) % 8 !== 0;
+
+  // ---------- состояние ----------
+  const st = { q: "", cat: "all", size: 0, colors: new Set(), maxPrice: PRICE_MAX, sort: "def" };
+  const randKey = new Map();
+
+  const cart = new Map(); // "id:размер" -> количество
+  const keyOf = (id, size) => `${id}:${size}`;
+  const parseKey = (k) => {
+    const [id, size] = k.split(":");
+    return { p: byId(Number(id)), size: Number(size) };
+  };
+  let panel = null; // "cart" | "filter" | "pick" | null
 
   // ---------- DOM ----------
   const $ = (id) => document.getElementById(id);
@@ -77,6 +151,8 @@
   const sheetTotal = $("sheetTotal");
   const dock = $("dock");
   const dockBtn = $("dockBtn");
+  const qInput = $("q");
+  const panels = { cart: sheet, filter: $("fsheet"), pick: $("psheet") };
 
   // приветствие по имени из Telegram
   const user = inTG && tg.initDataUnsafe && tg.initDataUnsafe.user;
@@ -86,42 +162,22 @@
 
   // ---------- хелперы ----------
   const totalQty = () => { let n = 0; cart.forEach((q) => (n += q)); return n; };
-  const totalSum = () => { let s = 0; cart.forEach((q, id) => (s += q * byId(id).price)); return s; };
+  const totalSum = () => { let s = 0; cart.forEach((q, k) => (s += q * parseKey(k).p.price)); return s; };
+  const qtyOfProduct = (id) => {
+    let n = 0;
+    cart.forEach((q, k) => { if (parseKey(k).p.id === id) n += q; });
+    return n;
+  };
 
   let toastTimer;
   function ping(text) {
     toast.textContent = text;
     toast.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove("show"), 1700);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 1900);
   }
 
   // ---------- витрина ----------
-  function ctlHtml(id) {
-    const q = cart.get(id) || 0;
-    return q
-      ? `<button class="step" data-act="dec" aria-label="Меньше">−</button><em>${q}</em><button class="step" data-act="inc" aria-label="Больше">+</button>`
-      : `<button class="add" data-act="inc">В корзину. Бух.</button>`;
-  }
-
-  let filter = "all";
-
-  function renderGrid(list) {
-    grid.innerHTML = list
-      .map(
-        (p, i) => `
-        <article class="card${filter === "all" || filter === p.tag ? "" : " hide"}" data-id="${p.id}" data-tag="${p.tag}" style="animation-delay:${i * 50}ms">
-          <div class="art"><img src="${p.img}" width="320" height="320" alt="${p.name}" decoding="async" draggable="false" ${i > 1 ? 'loading="lazy"' : ""} /></div>
-          <p class="joke">${p.joke}</p>
-          <h3>${p.name}</h3>
-          <div class="price">${rub(p.price)}</div>
-          <div class="ctl">${ctlHtml(p.id)}</div>
-        </article>`
-      )
-      .join("");
-    observeCards();
-  }
-
   // анимируем только то, что на экране (экономия батареи и FPS)
   const io = "IntersectionObserver" in window
     ? new IntersectionObserver(
@@ -130,13 +186,154 @@
       )
     : null;
 
-  function observeCards() {
-    grid.querySelectorAll(".card").forEach((c) => (io ? io.observe(c) : c.classList.add("live")));
+  const cards = new Map(); // id -> элемент (создаём один раз, потом только переставляем)
+
+  function buildCards() {
+    grid.innerHTML = products
+      .map(
+        (p, i) => `
+        <article class="card" data-id="${p.id}" data-p="${i % 2}" data-c="${i % 3}" style="animation-delay:${Math.min(i, 8) * 50}ms">
+          <div class="art">
+            <img src="${p.img}" width="320" height="320" alt="${p.name}" decoding="async" draggable="false" ${i > 1 ? 'loading="lazy"' : ""} />
+            <span class="inbag" hidden></span>
+          </div>
+          <div class="tags"><span>${CATS[p.cat].label}</span><span>${p.min}–${p.max}</span></div>
+          <p class="joke">${p.joke}</p>
+          <h3>${p.name}</h3>
+          <div class="price">${rub(p.price)}</div>
+          <div class="ctl"><button class="add" data-act="add" type="button">В корзину. Бух.</button></div>
+        </article>`
+      )
+      .join("");
+    grid.querySelectorAll(".card").forEach((el) => {
+      cards.set(Number(el.dataset.id), el);
+      io ? io.observe(el) : el.classList.add("live");
+    });
   }
 
-  function refreshCardCtl(id) {
-    const card = grid.querySelector(`.card[data-id="${id}"] .ctl`);
-    if (card) card.innerHTML = ctlHtml(id);
+  function refreshBadges() {
+    cards.forEach((el, id) => {
+      const n = qtyOfProduct(id);
+      const b = el.querySelector(".inbag");
+      b.hidden = !n;
+      if (n) b.textContent = `${n} в 🛒`;
+    });
+  }
+
+  // ---------- поиск и фильтры ----------
+  function matches(p) {
+    if (st.cat !== "all" && p.cat !== st.cat) return false;
+    if (st.size && !inStock(p, st.size)) return false;
+    if (st.colors.size && !st.colors.has(p.color)) return false;
+    if (p.price > st.maxPrice) return false;
+
+    const tokens = norm(st.q).split(/\s+/).filter(Boolean);
+    for (const t of tokens) {
+      if (/^\d+$/.test(t) && Number(t) >= 30 && Number(t) <= 50) {
+        if (!inStock(p, Number(t))) return false; // «42» в поиске = размер
+        continue;
+      }
+      if (p.hay.includes(t)) continue;
+      // «кроссовки», «красный», «серебро» — режем окончание, чтобы находило по корню
+      if (t.length >= 5 && p.hay.includes(t.slice(0, Math.max(4, t.length - 2)))) continue;
+      return false;
+    }
+    return true;
+  }
+
+  function sortList(list) {
+    const l = list.slice();
+    if (st.sort === "cheap") l.sort((a, b) => a.price - b.price);
+    else if (st.sort === "exp") l.sort((a, b) => b.price - a.price);
+    else if (st.sort === "name") l.sort((a, b) => a.name.localeCompare(b.name, "ru"));
+    else if (st.sort === "rand") l.sort((a, b) => randKey.get(a.id) - randKey.get(b.id));
+    return l;
+  }
+
+  const filterCount = () =>
+    st.colors.size + (st.maxPrice < PRICE_MAX ? 1 : 0) + (["cheap", "exp", "name"].includes(st.sort) ? 1 : 0);
+  let lastKey = "";
+  function apply(animate) {
+    const list = sortList(products.filter(matches));
+    const shown = new Set(list.map((p) => p.id));
+
+    // порядок + шахматная раскраска считаем по видимым карточкам
+    list.forEach((p, i) => {
+      const el = cards.get(p.id);
+      el.classList.remove("hide");
+      el.dataset.p = i % 2;
+      el.dataset.c = i % 3;
+      grid.appendChild(el);
+    });
+    cards.forEach((el, id) => { if (!shown.has(id)) el.classList.add("hide"); });
+
+    $("noRes").hidden = list.length > 0;
+    $("found").textContent =
+      list.length === products.length
+        ? `Всего ${products.length} пар. Выбирай, пока ботинки не передумали`
+        : `Найдено: ${list.length} из ${products.length}`;
+
+    // чипы
+    document.querySelectorAll("#filters .chip").forEach((c) => c.classList.toggle("on", c.dataset.cat === st.cat));
+    document.querySelectorAll("#sizeRow .chip").forEach((c) => c.classList.toggle("on", Number(c.dataset.size) === st.size));
+    document.querySelectorAll("#swatches .sw").forEach((c) => c.classList.toggle("on", st.colors.has(c.dataset.color)));
+    document.querySelectorAll("#sortRow .chip").forEach((c) => c.classList.toggle("on", c.dataset.sort === st.sort));
+    $("qClear").hidden = !qInput.value;
+    $("priceVal").textContent = st.maxPrice >= PRICE_MAX ? "любая" : rub(st.maxPrice);
+    $("applyBtn").textContent = list.length ? `Показать · ${list.length}` : "Ничего нет";
+    const fc = filterCount();
+    $("fBadge").hidden = !fc;
+    $("fBadge").textContent = fc;
+
+    // оставшиеся карточки «выпрыгивают» заново, как желе из формы (только если порядок/состав реально изменился)
+    const key = list.map((p) => p.id).join(",");
+    if (animate && key !== lastKey && !reduceMotion) {
+      list.slice(0, 10).forEach((p, i) => {
+        const el = cards.get(p.id);
+        if (!el.animate) return;
+        el.animate(
+          [
+            { opacity: 0, transform: "translateY(16px) scale(.86, .8)" },
+            { opacity: 1, transform: "translateY(-3px) scale(1.05, .96)", offset: 0.55 },
+            { opacity: 1, transform: "translateY(0) scale(.98, 1.02)", offset: 0.8 },
+            { opacity: 1, transform: "none" },
+          ],
+          { duration: 520, delay: i * 40, easing: "ease-out", fill: "backwards" }
+        );
+      });
+    }
+    lastKey = key;
+    if (panel === "filter") syncUI();
+  }
+
+  function buildControls() {
+    $("filters").innerHTML =
+      `<button class="chip on" data-cat="all" type="button">все</button>` +
+      Object.entries(CATS).map(([k, c]) => `<button class="chip" data-cat="${k}" type="button">${c.label}</button>`).join("");
+
+    $("sizeRow").innerHTML =
+      `<span class="row-label">размер</span>` +
+      SIZES.map((s) => `<button class="chip sm" data-size="${s}" type="button">${s}</button>`).join("");
+
+    $("swatches").innerHTML = Object.entries(COLORS)
+      .map(([k, c]) => `<button class="sw" data-color="${k}" type="button"><i style="background:${c.css}"></i>${c.label}</button>`)
+      .join("");
+
+    $("sortRow").innerHTML = [["def", "как есть"], ["cheap", "дешевле"], ["exp", "дороже"], ["name", "по алфавиту"]]
+      .map(([k, l]) => `<button class="chip" data-sort="${k}" type="button">${l}</button>`)
+      .join("");
+  }
+
+  function resetAll() {
+    st.q = "";
+    qInput.value = "";
+    st.cat = "all";
+    st.size = 0;
+    st.colors.clear();
+    st.maxPrice = PRICE_MAX;
+    $("price").value = PRICE_MAX;
+    st.sort = "def";
+    apply(true);
   }
 
   // ---------- корзина ----------
@@ -149,13 +346,14 @@
         </div>`;
     } else {
       sheetItems.innerHTML = [...cart.entries()]
-        .map(([id, q]) => {
-          const p = byId(id);
+        .map(([key, q]) => {
+          const { p, size } = parseKey(key);
           return `
-          <div class="row" data-id="${id}">
+          <div class="row" data-key="${key}">
             <div class="thumb"><img src="${p.img}" width="64" height="64" alt="" /></div>
             <div class="info">
               <b>${p.name}</b>
+              <small>размер ${size}</small>
               <span>${rub(p.price * q)}</span>
               <div class="qty">
                 <button data-act="dec" aria-label="Меньше">−</button>
@@ -185,13 +383,15 @@
     if (inTG) {
       const mb = tg.MainButton;
       safe(() => {
-        if (cartOpen) {
+        if (panel === "cart") {
           mb.setParams({
             text: qty ? `Оформить бум · ${rub(sum)}` : "Закрыть",
             color: "#ff3d8f",
             text_color: "#ffffff",
             is_visible: true,
           });
+        } else if (panel) {
+          mb.hide(); // в фильтрах и выборе размера свои кнопки внутри панели
         } else if (qty) {
           mb.setParams({
             text: `Корзина · ${qty} шт · ${rub(sum)}`,
@@ -205,25 +405,37 @@
       });
     } else {
       dockBtn.textContent = `Корзина · ${qty} шт · ${rub(sum)}`;
-      dock.classList.toggle("show", qty > 0 && !cartOpen);
+      dock.classList.toggle("show", qty > 0 && !panel);
     }
   }
 
-  function setQty(id, q) {
-    q > 0 ? cart.set(id, q) : cart.delete(id);
-    refreshCardCtl(id);
-    if (cartOpen) renderSheet();
+  function setQty(key, q) {
+    q > 0 ? cart.set(key, q) : cart.delete(key);
+    if (panel === "cart") renderSheet();
+    refreshBadges();
     syncUI();
     bumpBadge();
   }
 
-  function openCart() {
-    if (cartOpen) return;
-    cartOpen = true;
-    renderSheet();
-    sheet.classList.add("open");
+  function addToCart(id, size) {
+    const key = keyOf(id, size);
+    setQty(key, (cart.get(key) || 0) + 1);
+    haptic.ok();
+    ping(`${byId(id).name}, р. ${size} — топочет в корзину`);
+    jelly(cards.get(id).querySelector(".art"));
+  }
+
+  // ---------- панели (корзина / параметры / размер) ----------
+  function openPanel(name) {
+    if (panel === name) return;
+    if (panel) closePanel();
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    panel = name;
+    if (name === "cart") renderSheet();
+    const el = panels[name];
+    el.classList.add("open");
+    el.setAttribute("aria-hidden", "false");
     overlay.classList.add("open");
-    sheet.setAttribute("aria-hidden", "false");
     document.body.classList.add("lock");
     if (inTG) {
       safe(() => tg.BackButton.show());
@@ -233,12 +445,13 @@
     syncUI();
   }
 
-  function closeCart() {
-    if (!cartOpen) return;
-    cartOpen = false;
-    sheet.classList.remove("open");
+  function closePanel() {
+    if (!panel) return;
+    const el = panels[panel];
+    panel = null;
+    el.classList.remove("open");
+    el.setAttribute("aria-hidden", "true");
     overlay.classList.remove("open");
-    sheet.setAttribute("aria-hidden", "true");
     document.body.classList.remove("lock");
     if (inTG) {
       safe(() => tg.BackButton.hide());
@@ -248,7 +461,7 @@
   }
 
   function checkout() {
-    if (!cart.size) return closeCart();
+    if (!cart.size) return closePanel();
     haptic.ok();
     const msg = "Оплаты пока нет — это только интерфейс 😎";
     if (inTG && typeof tg.showAlert === "function") safe(() => tg.showAlert(msg));
@@ -256,63 +469,153 @@
   }
 
   function mainAction() {
-    cartOpen ? checkout() : openCart();
+    panel === "cart" ? checkout() : openPanel("cart");
+  }
+
+  // ---------- выбор размера ----------
+  let pickId = 0;
+  let pickSize = 0;
+
+  function renderPicker() {
+    const p = byId(pickId);
+    $("sizeGrid").innerHTML = SIZES.filter((s) => s >= p.min && s <= p.max)
+      .map((s) => {
+        const ok = inStock(p, s);
+        return `<button class="size${s === pickSize ? " on" : ""}" data-size="${s}" type="button"${ok ? "" : " disabled"}>${s}</button>`;
+      })
+      .join("");
+    $("pHint").textContent = pickSize
+      ? `Размер ${pickSize}. Отличный выбор. Ну, почти.`
+      : "Выбери размер — ботинки не гадалки. Зачёркнутые уже разобрали.";
+  }
+
+  function startAdd(id) {
+    const p = byId(id);
+    // если в фильтре уже выбран размер — кладём сразу его
+    if (st.size && inStock(p, st.size)) return addToCart(id, st.size);
+    pickId = id;
+    pickSize = 0;
+    $("pImg").src = p.img;
+    $("pName").textContent = p.name;
+    $("pPrice").textContent = rub(p.price);
+    renderPicker();
+    openPanel("pick");
   }
 
   // ---------- события ----------
   grid.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-act]");
     if (!btn) return;
-    const id = Number(btn.closest(".card").dataset.id);
-    const cur = cart.get(id) || 0;
     const card = btn.closest(".card");
-    if (btn.dataset.act === "inc") {
-      setQty(id, cur + 1);
-      haptic.tap();
-      if (cur === 0) ping(`${byId(id).name} топочет в корзину`);
-    } else {
-      setQty(id, cur - 1);
-      haptic.tap();
-    }
+    haptic.tap();
     jelly(card.querySelector(".art"));
-    jelly(card.querySelector(".ctl em"), 420);
+    startAdd(Number(card.dataset.id));
+  });
+
+  $("sizeGrid").addEventListener("click", (e) => {
+    const b = e.target.closest(".size");
+    if (!b || b.disabled) return;
+    pickSize = Number(b.dataset.size);
+    haptic.pick();
+    renderPicker();
+    jelly($("sizeGrid").querySelector(".on"), 420);
+  });
+
+  $("pAdd").addEventListener("click", () => {
+    if (!pickSize) {
+      haptic.warn();
+      jelly($("sizeGrid"), 420);
+      ping("Сначала размер, потом бум");
+      return;
+    }
+    const id = pickId;
+    const size = pickSize;
+    closePanel();
+    addToCart(id, size);
   });
 
   sheetItems.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-act]");
     if (!btn) return;
-    const id = Number(btn.closest(".row").dataset.id);
-    const cur = cart.get(id) || 0;
+    const key = btn.closest(".row").dataset.key;
+    const cur = cart.get(key) || 0;
     const act = btn.dataset.act;
     haptic.tap();
-    if (act === "inc") setQty(id, cur + 1);
-    if (act === "dec") setQty(id, cur - 1);
-    if (act === "del") setQty(id, 0);
+    if (act === "inc") setQty(key, cur + 1);
+    if (act === "dec") setQty(key, cur - 1);
+    if (act === "del") setQty(key, 0);
   });
 
+  // категории
   $("filters").addEventListener("click", (e) => {
-    const chip = e.target.closest("[data-filter]");
+    const chip = e.target.closest("[data-cat]");
     if (!chip) return;
-    filter = chip.dataset.filter;
+    st.cat = chip.dataset.cat;
     haptic.pick();
-    document.querySelectorAll(".chip").forEach((c) => c.classList.toggle("on", c === chip));
-    let n = 0;
-    grid.querySelectorAll(".card").forEach((card) => {
-      const show = filter === "all" || card.dataset.tag === filter;
-      card.classList.toggle("hide", !show);
-      // оставшиеся карточки «выпрыгивают» заново, как желе из формы
-      if (show && !reduceMotion && card.animate) {
-        card.animate(
-          [
-            { opacity: 0, transform: "translateY(16px) scale(.86, .8)" },
-            { opacity: 1, transform: "translateY(-3px) scale(1.05, .96)", offset: 0.55 },
-            { opacity: 1, transform: "translateY(0) scale(.98, 1.02)", offset: 0.8 },
-            { opacity: 1, transform: "none" },
-          ],
-          { duration: 520, delay: n++ * 45, easing: "ease-out", fill: "backwards" }
-        );
-      }
-    });
+    apply(true);
+  });
+
+  // размер (повторный тап снимает фильтр)
+  $("sizeRow").addEventListener("click", (e) => {
+    const chip = e.target.closest("[data-size]");
+    if (!chip) return;
+    const s = Number(chip.dataset.size);
+    st.size = st.size === s ? 0 : s;
+    haptic.pick();
+    apply(true);
+  });
+
+  // поиск
+  let qTimer;
+  qInput.addEventListener("input", () => {
+    $("qClear").hidden = !qInput.value;
+    clearTimeout(qTimer);
+    qTimer = setTimeout(() => {
+      st.q = qInput.value;
+      apply(true);
+    }, 140);
+  });
+  qInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") qInput.blur(); // прячем клавиатуру
+  });
+  $("qClear").addEventListener("click", () => {
+    qInput.value = "";
+    st.q = "";
+    haptic.tap();
+    apply(true);
+    qInput.focus();
+  });
+
+  // панель параметров
+  $("filterBtn").addEventListener("click", () => openPanel("filter"));
+  $("swatches").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-color]");
+    if (!b) return;
+    const c = b.dataset.color;
+    st.colors.has(c) ? st.colors.delete(c) : st.colors.add(c);
+    haptic.pick();
+    jelly(b, 420);
+    apply(true);
+  });
+  $("sortRow").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-sort]");
+    if (!b) return;
+    st.sort = b.dataset.sort;
+    haptic.pick();
+    apply(true);
+  });
+  $("price").addEventListener("input", (e) => {
+    st.maxPrice = Number(e.target.value);
+    apply(true);
+  });
+  $("applyBtn").addEventListener("click", closePanel);
+  $("resetBtn").addEventListener("click", () => {
+    haptic.warn();
+    resetAll();
+  });
+  $("noResReset").addEventListener("click", () => {
+    haptic.tap();
+    resetAll();
   });
 
   // тап по большому кроссовку — он «боингает»
@@ -323,31 +626,32 @@
 
   $("shuffleBtn").addEventListener("click", () => {
     haptic.warn();
-    renderGrid([...products].sort(() => Math.random() - 0.5));
+    products.forEach((p) => randKey.set(p.id, Math.random()));
+    st.sort = "rand";
+    apply(true);
     ping("Витрина в панике. Это нормально.");
   });
 
-  $("cartBtn").addEventListener("click", openCart);
-  $("sheetClose").addEventListener("click", closeCart);
-  overlay.addEventListener("click", closeCart);
-  dockBtn.addEventListener("click", openCart);
+  $("cartBtn").addEventListener("click", () => openPanel("cart"));
+  overlay.addEventListener("click", closePanel);
+  dockBtn.addEventListener("click", () => openPanel("cart"));
   $("checkoutBtn").addEventListener("click", checkout);
+  document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", closePanel));
   $("clearBtn").addEventListener("click", () => {
     if (!cart.size) return;
-    const ids = [...cart.keys()];
     cart.clear();
-    ids.forEach(refreshCardCtl);
     renderSheet();
+    refreshBadges();
     syncUI();
     bumpBadge();
     haptic.warn();
     ping("Всё выкинуто. Ботинки в шоке.");
   });
-  window.addEventListener("keydown", (e) => e.key === "Escape" && closeCart());
+  window.addEventListener("keydown", (e) => e.key === "Escape" && closePanel());
 
   if (inTG) {
     safe(() => tg.MainButton.onClick(mainAction));
-    safe(() => tg.BackButton.onClick(closeCart));
+    safe(() => tg.BackButton.onClick(closePanel));
   }
 
   // ---------- желейный скролл ----------
@@ -440,6 +744,8 @@
   }
 
   // ---------- старт ----------
-  renderGrid(products);
+  buildCards();
+  buildControls();
+  apply(false);
   syncUI();
 })();

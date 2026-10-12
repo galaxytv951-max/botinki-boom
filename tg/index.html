@@ -13,7 +13,7 @@
   <link rel="apple-touch-icon" href="icon-192.png" />
   <title>Ботинки Бум</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="styles.css?v=4" />
+  <link rel="stylesheet" href="styles.css?v=5" />
 </head>
 <body>
   <header class="top">
@@ -57,13 +57,25 @@
 
     <section class="catalog" id="catalog">
       <h2>Витрина хаоса</h2>
-      <div class="filters" id="filters">
-        <button class="chip on" data-filter="all" type="button">все</button>
-        <button class="chip" data-filter="run" type="button">убегать</button>
-        <button class="chip" data-filter="formal" type="button">серьёзно</button>
-        <button class="chip" data-filter="home" type="button">дома</button>
+      <div class="searchbar">
+        <label class="search">
+          <span aria-hidden="true">🔍</span>
+          <input id="q" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Поиск: кеды, чёрные, 42…" aria-label="Поиск" />
+          <button class="q-clear" id="qClear" type="button" aria-label="Очистить" hidden>✕</button>
+        </label>
+        <button class="fbtn" id="filterBtn" type="button" aria-label="Параметры">
+          ⚙️<span class="fbadge" id="fBadge" hidden>0</span>
+        </button>
       </div>
+      <div class="filters" id="filters"></div>
+      <div class="filters sizes" id="sizeRow"></div>
+      <p class="found" id="found"></p>
       <div class="grid" id="grid"></div>
+      <div class="no-res" id="noRes" hidden>
+        <img src="assets/shoe-3.png" width="130" height="130" alt="" />
+        <p>Ничего не нашлось. Даже ботинки удивлены.</p>
+        <button class="btn boom" id="noResReset" type="button">Сбросить всё</button>
+      </div>
     </section>
 
     <section class="hits">
@@ -125,7 +137,47 @@
     </div>
   </section>
 
+  <section class="sheet" id="fsheet" aria-hidden="true" aria-label="Параметры">
+    <div class="sheet-grip"></div>
+    <div class="sheet-head">
+      <h2>Параметры</h2>
+      <button class="sheet-close" data-close type="button" aria-label="Закрыть">✕</button>
+    </div>
+    <div class="sheet-body">
+      <h4 class="lbl">Цвет</h4>
+      <div class="wrap" id="swatches"></div>
+      <h4 class="lbl">Цена до <b id="priceVal"></b></h4>
+      <input class="range" id="price" type="range" min="1000" max="25000" step="500" value="25000" aria-label="Максимальная цена" />
+      <h4 class="lbl">Сортировка</h4>
+      <div class="wrap" id="sortRow"></div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn boom" id="applyBtn" type="button">Показать</button>
+      <button class="sheet-clear" id="resetBtn" type="button">сбросить всё</button>
+    </div>
+  </section>
+
+  <section class="sheet" id="psheet" aria-hidden="true" aria-label="Выбор размера">
+    <div class="sheet-grip"></div>
+    <div class="sheet-head">
+      <h2>Какой размер?</h2>
+      <button class="sheet-close" data-close type="button" aria-label="Закрыть">✕</button>
+    </div>
+    <div class="sheet-body">
+      <div class="pick-prod">
+        <div class="thumb"><img id="pImg" src="assets/shoe-1.png" width="64" height="64" alt="" /></div>
+        <div><b id="pName"></b><span id="pPrice"></span></div>
+      </div>
+      <h4 class="lbl">Размер (EU)</h4>
+      <div class="size-grid" id="sizeGrid"></div>
+      <p class="hint" id="pHint"></p>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn boom" id="pAdd" type="button">В корзину</button>
+    </div>
+  </section>
+
   <div class="toast" id="toast" role="status"></div>
-  <script src="app.js?v=4"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>
