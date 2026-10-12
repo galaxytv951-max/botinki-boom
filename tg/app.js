@@ -33,9 +33,10 @@
   // «боинг»: сплющило → вытянуло → успокоилось
   const JELLY = [
     { transform: "scale(1, 1)" },
-    { transform: "scale(1.1, .88)", offset: 0.2 },
-    { transform: "scale(.94, 1.08)", offset: 0.45 },
-    { transform: "scale(1.03, .98)", offset: 0.7 },
+    { transform: "scale(1.16, .8)", offset: 0.18 },
+    { transform: "scale(.88, 1.16)", offset: 0.4 },
+    { transform: "scale(1.08, .94)", offset: 0.62 },
+    { transform: "scale(.98, 1.03)", offset: 0.82 },
     { transform: "scale(1, 1)" },
   ];
   function jelly(el, duration) {
@@ -355,10 +356,15 @@
   // Нечётные и чётные карточки идут на разных пружинах, поэтому получается волна.
   if (!reduceMotion) {
     const appEl = document.querySelector(".app");
+    // x — наклон/вытяжка карточки;
+    // l — «запаздывание» ботинка внутри карточки (он ползёт по инерции);
+    // q — сжатие ботинка: при рывке прижался, потом разжался с перелётом и подпрыгнул.
+    // Значения c малы нарочно: пружины недодемпфированы, поэтому качаются.
     const springs = [
-      { name: "a", x: 0, v: 0, k: 140, c: 9.5 },
-      { name: "b", x: 0, v: 0, k: 100, c: 8 },
+      { name: "a", x: 0, v: 0, k: 140, c: 7.5, l: 0, lv: 0, lk: 75, lc: 4.4, q: 0, qv: 0, qk: 120, qc: 5 },
+      { name: "b", x: 0, v: 0, k: 100, c: 6.5, l: 0, lv: 0, lk: 60, lc: 4, q: 0, qv: 0, qk: 95, qc: 4.4 },
     ];
+    const rest = (p, v) => Math.abs(p) < 0.01 && Math.abs(v) < 0.08;
     const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
     let lastY = window.scrollY;
     let lastT = 0;
@@ -368,9 +374,15 @@
 
     const paint = () => {
       springs.forEach((s) => {
-        appEl.style.setProperty(`--${s.name}-sk`, `${(s.x * 2.1).toFixed(3)}deg`);
-        appEl.style.setProperty(`--${s.name}-sx`, (1 - Math.abs(s.x) * 0.022).toFixed(4));
-        appEl.style.setProperty(`--${s.name}-sy`, (1 + Math.abs(s.x) * 0.04).toFixed(4));
+        const n = s.name;
+        // карточка: крен + вытяжка
+        appEl.style.setProperty(`--${n}-sk`, `${(s.x * 3.4).toFixed(3)}deg`);
+        appEl.style.setProperty(`--${n}-sx`, (1 - Math.abs(s.x) * 0.04).toFixed(4));
+        appEl.style.setProperty(`--${n}-sy`, (1 + Math.abs(s.x) * 0.075).toFixed(4));
+        // ботинок внутри: сдвиг по инерции + сплющивание (q<0 после остановки = растянулся вверх)
+        appEl.style.setProperty(`--${n}-ty`, `${(s.l * 11).toFixed(2)}px`);
+        appEl.style.setProperty(`--${n}-ssy`, clamp(1 - s.q * 0.2, 0.62, 1.32).toFixed(4));
+        appEl.style.setProperty(`--${n}-ssx`, clamp(1 + s.q * 0.12, 0.8, 1.2).toFixed(4));
       });
     };
 
@@ -381,21 +393,31 @@
       const speed = (y - lastY) / dt; // px/сек, со знаком
       lastY = y;
       smooth += (speed - smooth) * 0.3;
-      const target = clamp(smooth / 1400, -1, 1);
+      const target = clamp(smooth / 1100, -1.4, 1.4);
+      const press = Math.abs(target); // сжатие не зависит от направления
 
       let alive = Math.abs(target) > 0.01;
       springs.forEach((s) => {
-        const acc = -s.k * (s.x - target) - s.c * s.v;
+        let acc = -s.k * (s.x - target) - s.c * s.v;
         s.v += acc * dt;
         s.x += s.v * dt;
-        if (Math.abs(s.x) > 0.008 || Math.abs(s.v) > 0.06) alive = true;
+
+        acc = -s.lk * (s.l - target) - s.lc * s.lv;
+        s.lv += acc * dt;
+        s.l += s.lv * dt;
+
+        acc = -s.qk * (s.q - press) - s.qc * s.qv;
+        s.qv += acc * dt;
+        s.q += s.qv * dt;
+
+        if (!rest(s.x, s.v) || !rest(s.l, s.lv) || !rest(s.q, s.qv)) alive = true;
       });
       paint();
 
       calm = alive ? 0 : calm + 1;
       if (calm > 6) {
         // всё успокоилось: ровняем и выключаем цикл, чтобы не жечь батарею
-        springs.forEach((s) => { s.x = 0; s.v = 0; });
+        springs.forEach((s) => { s.x = s.v = s.l = s.lv = s.q = s.qv = 0; });
         paint();
         document.body.classList.remove("moving");
         raf = 0;

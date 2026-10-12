@@ -586,15 +586,23 @@ footer {
 }
 .btn:active, .cart-pill:active, .chip:active, .ctl button:active,
 .sheet-close:active, .qty button:active, .del:active {
-  transform: scale(1.06, .88);
+  transform: scale(1.12, .8);
   transition-duration: .1s, .15s;
 }
 
 /* тянется при скролле: значения обновляет app.js (две пружины, чётные/нечётные чуть отстают) */
 .app {
-  --a-sk: 0deg; --a-sx: 1; --a-sy: 1;
-  --b-sk: 0deg; --b-sx: 1; --b-sy: 1;
+  --a-sk: 0deg; --a-sx: 1; --a-sy: 1; --a-ty: 0px; --a-ssx: 1; --a-ssy: 1;
+  --b-sk: 0deg; --b-sx: 1; --b-sy: 1; --b-ty: 0px; --b-ssx: 1; --b-ssy: 1;
 }
+
+/* ботинки внутри карточек живут своей жизнью: отстают по инерции и сплющиваются.
+   Используем отдельные свойства translate/scale, они не конфликтуют с PS1-покачиванием (transform). */
+.art img, .hero-shoe { transform-origin: 50% 88%; }
+.card:nth-child(odd) .art img { translate: 0 var(--a-ty); scale: var(--a-ssx) var(--a-ssy); }
+.card:nth-child(even) .art img { translate: 0 var(--b-ty); scale: var(--b-ssx) var(--b-ssy); }
+.hero-shoe { translate: 0 var(--a-ty); scale: var(--a-ssx) var(--a-ssy); }
+body.moving .art img, body.moving .hero-shoe { will-change: transform, translate, scale; }
 .card:nth-child(odd), .hit:nth-child(odd), details:nth-of-type(odd) {
   transform: skewY(var(--a-sk)) scale(var(--a-sx), var(--a-sy));
 }
